@@ -211,7 +211,7 @@ def hello_mcp(context) -> None:
     type="mcpToolTrigger",
     toolName="getsnippet",
     description="Retrieve a snippet by name.",
-    toolProperties=f"[{{\"propertyName\":\"{_SNIPPET_NAME_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The name of the snippet.\"}}]"
+    toolProperties=tool_properties_get_snippets_json
 )
 @app.generic_input_binding(
     arg_name="file",
@@ -240,9 +240,8 @@ def get_snippet(file: func.InputStream, context) -> str:
     type="mcpToolTrigger",
     toolName="savesnippet",
     description="Save a snippet with a name.",
-    toolProperties=f"[{{\"propertyName\":\"{_SNIPPET_NAME_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The name of the snippet.\"}},"
-                   f"{{\"propertyName\":\"{_SNIPPET_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The content of the snippet.\"}}]"
-)
+    toolProperties=tool_properties_save_snippets_json
+)                   
 @app.generic_output_binding(
     arg_name="file",
     type="blob",
@@ -267,7 +266,7 @@ def save_snippet(file: func.Out[str], context) -> str:
 
 ## Next Steps
 
-- Add [API Management](https://learn.microsoft.com/azure/api-management/api-management-key-concepts) to your MCP server
-- Add [EasyAuth](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization) to your MCP server
+- Add [API Management]() to your MCP server
+- Add [EasyAuth]() to your MCP server
 - Enable VNET using VNET_ENABLED=true flag
-- Learn more about [related MCP efforts from Microsoft](https://github.com/modelcontextprotocol)
+- Learn more about [related MCP efforts from Microsoft]()

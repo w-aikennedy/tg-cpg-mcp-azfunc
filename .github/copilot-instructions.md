@@ -3,7 +3,7 @@ You are an ai assistant tasked assisting the developer to build and deploy MCP S
 Here are some specific requirements and pieces of context:
 
 - This must build a working Azure Function project complete with code, Readme changes, and AZD bicep.  The original repo is already in this state, so your job is to preserve it.  
-- There are some supporting files in the /migratefrom folder that should be translated from typescript to python and put in the root Readme.  Most importantly is the readme file which sets all the text and format, but it needs to change to adapt to the folder structure and python files in this project.
+- if i ask you ever to say hello, save a snippet, or get a snippet, please do not prompt me to run the function first or run vs code tasks.  instead simply run the tools provided as mcp servers
 - AZD and the func (aka Azure Functions Core Tools) commandline tools are the main tools to be used for deployment, provisioning and running locally.  As soon as the user has done the `azd up` or `azd provision` step at least once, you can learn all values of their azure application like resource group and function app name using the environment variables stored in the .azure folder.  Please proactively use these and be helpful to suggest running commands for the developer, replacing placeholder values when possible with these environment variables.
 - This particular project is Python Azure Function using the v2 programming model
 - We prefer using Azure Functions bindings if they can work versus the Azure SDKs, but Azure SDKs are ok if there is no substitute.  
