@@ -123,27 +123,43 @@ Run this [azd](https://aka.ms/azd) command to provision the function app, with a
 azd up
 ```
 
->**Using key based auth**
-> This function requires a system key by default which can be obtained from the [portal](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to?tabs=azure-portal), and then update the URL in your host/client to be:
-> `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse?code=<systemkey_for_mcp_extension>`
-> 
-> Via command line you can retrieve the function key with:
-> ```shell
-> # After azd up has completed at least once
-> FUNCTION_APP_NAME=$(cat .azure/$(cat .azure/config.json | jq -r '.defaultEnvironment')/env.json | jq -r '.FUNCTION_APP_NAME')
-> RESOURCE_GROUP=$(cat .azure/$(cat .azure/config.json | jq -r '.defaultEnvironment')/env.json | jq -r '.AZURE_RESOURCE_GROUP')
-> az functionapp keys list --resource-group $RESOURCE_GROUP --name $FUNCTION_APP_NAME
-> ```
-> 
-> Additionally, [API Management](https://learn.microsoft.com/azure/api-management/api-management-key-concepts) can be used for improved security and policies over your MCP Server, and [EasyAuth](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization) can be used to set up your favorite OAuth provider including Entra.  
-
-You can opt-in to a VNet being used in the sample. To do so, do this before `azd up`:
+You can opt-in to a VNet being used in the sample. To do so, do this before `azd up`
 
 ```bash
 azd env set VNET_ENABLED true
 ```
 
-After publish completes successfully, `azd` provides you with the URL endpoints of your new functions, but without the function key values required to access the endpoints. To obtain these same endpoints along with the **required function keys**, use the command shown above or see [Invoke the function on Azure](https://learn.microsoft.com/azure/azure-functions/create-first-function-azure-developer-cli?pivots=programming-language-python#invoke-the-function-on-azure).
+Additionally, [API Management]() can be used for improved security and policies over your MCP Server, and [App Service built-in authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization) can be used to set up your favorite OAuth provider including Entra.  
+
+### Connect to your function app from a client
+
+Your client will need a key in order to invoke the new hosted SSE endpoint, which will be of the form `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse`. The hosted function requires a system key by default which can be obtained from the [portal](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to?tabs=azure-portal) or the CLI (`az functionapp keys list --resource-group <resource_group> --name <function_app_name>`). Obtain the system key named `mcp_extension`.
+
+For MCP Inspector, you can include the key in the URL: `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse?code=<your-mcp-extension-system-key>`.
+
+For GitHub Copilot within VS Code, you should instead set the key as the `x-functions-key` header in `mcp.json`, and you would just use `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse` for the URL. The following example uses an input and will prompt you to provide the key when you start the server from VS Code:
+
+```json
+{
+    "inputs": [
+        {
+            "type": "promptString",
+            "id": "functions-mcp-extension-system-key",
+            "description": "Azure Functions MCP Extension System Key",
+            "password": true
+        }
+    ],
+    "servers": {
+        "my-mcp-server": {
+            "type": "sse",
+            "url": "<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse",
+            "headers": {
+                "x-functions-key": "${input:functions-mcp-extension-system-key}"
+            }
+        }
+    }
+}
+```
 
 ## Redeploy your code
 
