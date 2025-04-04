@@ -171,16 +171,6 @@ The function code for the `get_snippet` and `save_snippet` endpoints are defined
 Here's the actual code from the function_app.py file:
 
 ```python
-import azure.functions as func
-import logging
-import json
- 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
- 
-# Constants for the Azure Blob Storage container, file, and blob path
-_SNIPPET_NAME_PROPERTY_NAME = "snippetname"
-_SNIPPET_PROPERTY_NAME = "snippet"
-_BLOB_PATH = "snippets/{mcptoolargs." + _SNIPPET_NAME_PROPERTY_NAME + "}.json"
 
 @app.generic_trigger(arg_name="context", type="mcpToolTrigger", toolName="hello", 
                      description="Hello world.", 
