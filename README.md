@@ -168,73 +168,93 @@ azd deploy
 
 The function code for the `get_snippet` and `save_snippet` endpoints are defined in the Python files in the `src` directory. The MCP function annotations expose these functions as MCP Server tools.
 
-This shows the code for a few MCP server examples (get string, get object, save object) in Python:
+Here's the actual code from the function_app.py file:
 
 ```python
-# Import statements
 import azure.functions as func
 import logging
 import json
+ 
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+ 
+# Constants for the Azure Blob Storage container, file, and blob path
+_SNIPPET_NAME_PROPERTY_NAME = "snippetname"
+_SNIPPET_PROPERTY_NAME = "snippet"
+_BLOB_PATH = "snippets/{mcptoolargs." + _SNIPPET_NAME_PROPERTY_NAME + "}.json"
 
-# Initialize the Azure Functions app with Python v2 model
-app = func.FunctionApp()
+@app.generic_trigger(arg_name="context", type="mcpToolTrigger", toolName="hello", 
+                     description="Hello world.", 
+                     toolProperties="[]")
+def hello_mcp(context) -> None:
+    """
+    A simple function that returns a greeting message.
 
-# Hello function - responds with hello message
-@app.mcp_tool('hello', description="Simple hello world MCP Tool that responses with a hello message.")
-def hello_tool(req: func.McpRequest) -> str:
-    logging.info('Python MCP HTTP trigger hello_tool function processed a request.')
-    return "Hello I am MCP Tool!"
+    Args:
+        context: The trigger context (not used in this function).
 
-# Blob storage binding for snippets
-@app.mcp_tool(
-    name='get_snippets',
-    description="Gets code snippets from your snippet collection.",
-    properties=[func.McpProperty(name="snippetname", description="The name of the snippet.")])
-@app.blob_input(arg_name="snippet", 
-                path="snippets/{snippetname}", 
-                connection="AzureWebJobsStorage")
-def get_snippet(req: func.McpRequest, snippet: str) -> str:
-    logging.info('Python MCP HTTP trigger get_snippet function processed a request.')
-    
-    # Get snippet name from the tool arguments
-    snippet_name = req.params.get('snippetname')
-    logging.info(f"Snippet name: {snippet_name}")
-    
-    if not snippet_name:
-        return "No snippet name provided"
-    
-    if not snippet:
-        return f"Snippet '{snippet_name}' not found"
-    
-    logging.info(f"Retrieved snippet: {snippet_name}")
-    return snippet
+    Returns:
+        str: A greeting message.
+    """
+    return "Hello I am MCPTool!"
 
-# Save snippet function
-@app.mcp_tool(
-    name='save_snippet',
-    description="Saves a code snippet into your snippet collection.",
-    properties=[
-        func.McpProperty(name="snippetname", description="The name of the snippet."),
-        func.McpProperty(name="snippet", description="The code snippet."),
-    ])
-@app.blob_output(arg_name="output_blob", 
-                 path="snippets/{snippetname}", 
-                 connection="AzureWebJobsStorage")
-def save_snippet(req: func.McpRequest) -> str:
-    logging.info('Python MCP HTTP trigger save_snippet function processed a request.')
-    
-    # Get snippet name and content from the tool arguments
-    snippet_name = req.params.get('snippetname')
-    snippet_content = req.params.get('snippet')
-    
-    if not snippet_name:
-        return "No snippet name provided"
-    
-    if not snippet_content:
-        return "No snippet content provided"
-    
-    # Return the snippet content to be saved via the blob output binding
+
+@app.generic_trigger(
+    arg_name="context",
+    type="mcpToolTrigger",
+    toolName="getsnippet",
+    description="Retrieve a snippet by name.",
+    toolProperties=f"[{{\"propertyName\":\"{_SNIPPET_NAME_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The name of the snippet.\"}}]"
+)
+@app.generic_input_binding(
+    arg_name="file",
+    type="blob",
+    connection="AzureWebJobsStorage",
+    path=_BLOB_PATH
+)
+def get_snippet(file: func.InputStream, context) -> str:
+    """
+    Retrieves a snippet by name from Azure Blob Storage.
+ 
+    Args:
+        file (func.InputStream): The input binding to read the snippet from Azure Blob Storage.
+        context: The trigger context containing the input arguments.
+ 
+    Returns:
+        str: The content of the snippet or an error message.
+    """
+    snippet_content = file.read().decode("utf-8")
+    logging.info(f"Retrieved snippet: {snippet_content}")
     return snippet_content
+
+
+@app.generic_trigger(
+    arg_name="context",
+    type="mcpToolTrigger",
+    toolName="savesnippet",
+    description="Save a snippet with a name.",
+    toolProperties=f"[{{\"propertyName\":\"{_SNIPPET_NAME_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The name of the snippet.\"}},"
+                   f"{{\"propertyName\":\"{_SNIPPET_PROPERTY_NAME}\",\"propertyType\":\"string\",\"description\":\"The content of the snippet.\"}}]"
+)
+@app.generic_output_binding(
+    arg_name="file",
+    type="blob",
+    connection="AzureWebJobsStorage",
+    path=_BLOB_PATH
+)
+def save_snippet(file: func.Out[str], context) -> str:
+    content = json.loads(context)
+    snippet_name_from_args = content["arguments"][_SNIPPET_NAME_PROPERTY_NAME]
+    snippet_content_from_args = content["arguments"][_SNIPPET_PROPERTY_NAME]
+
+    if not snippet_name_from_args:
+        return "No snippet name provided"
+
+    if not snippet_content_from_args:
+        return "No snippet content provided"
+ 
+    file.set(snippet_content_from_args)
+    logging.info(f"Saved snippet: {snippet_content_from_args}")
+    return f"Snippet '{snippet_content_from_args}' saved successfully"
 ```
 
 ## Next Steps
