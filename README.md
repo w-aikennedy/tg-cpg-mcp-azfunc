@@ -1,57 +1,82 @@
-# Project Name
+# Python App with MCP Integration
 
-(short, 1-3 sentenced, description of the project)
+This guide walks you through setting up and connecting your Python application with the Model Context Protocol (MCP) Inspector.
 
-## Features
+---
 
-This project framework provides the following features:
+## 📦 Installation & Setup
 
-* Feature 1
-* Feature 2
-* ...
+### 1. Install Azure Functions Extensions
 
-## Getting Started
+Ensure you're inside your Python working directory and have the Azure Functions Core Tools installed. Then, run:
 
-### Prerequisites
+```bash
+func extensions install
+```
 
-(ideally very short, if any)
+### 2. Create and Activate Virtual Environment
+ 
+Make sure your Python virtual environment is activated before proceeding.
+ 
+Create:
+ 
+```bash
+python -m .venv env
+```
+ 
+Activate:
+ 
+```bash
+# Example (Linux/macOS)
+source venv/bin/activate
+ 
+# Example (Windows)
+.\venv\Scripts\activate
+```
+ 
+### 3. Activate Storage
+ 
+Ensure that your storage is ready. If you are not using your own connection string in local.settings.json
+then be sure to run Azurite Blob Storage. Azurite is a VS Code extension used for storage emulation.
+ 
+### 4. Start the Functions Host
 
-- OS
-- Library version
-- ...
+Run the following command to start the Azure Functions host:
 
-### Installation
+```bash
+func host start
+```
 
-(ideally very short)
+## 🔗 Installation & Setup
 
-- npm install [package name]
-- mvn install
-- ...
+### 5. Start MCP Inspector
 
-### Quickstart
-(Add steps to get up and running quickly)
+Open a new terminal and run the MCP Inspector:
 
-1. git clone [repository clone url]
-2. cd [repository name]
-3. ...
+```bash
+npx @modelcontextprotocol/inspector node build/index.js
+```
 
+### 6. Configure Connection
 
-## Demo
+Transport Type: SSE (Server-Sent Events)\
+URL: <http://0.0.0.0:7071/runtime/webhooks/mcp/sse>
 
-A demo app is included to show how to use the project.
+### 7. Connect to Server
 
-To run the demo, follow these steps:
+Click Connect within the MCP Inspector UI.
 
-(Add steps to start up the demo)
+## 🧰 Explore Tools
 
-1.
-2.
-3.
+Once generated:
 
-## Resources
+- You can list all generated tools
+- Select any tool to begin interacting with your Python function through MCP
 
-(Any additional resources or related projects)
+## ✅ Verification
 
-- Link to supporting information
-- Link to similar sample
-- ...
+To verify the setup is working:
+
+- Confirm the MCP Inspector shows the connection is active
+- Tools appear in the inspector panel after connection
+- Selecting a tool returns the expected behavior or response
