@@ -272,6 +272,15 @@ def save_snippet(file: func.Out[str], context) -> str:
     return f"Snippet '{snippet_content_from_args}' saved successfully"
 ```
 
+Note that the `host.json` file also includes a reference to the experimental bundle, which is required for apps using this feature:
+
+```json
+"extensionBundle": {
+  "id": "Microsoft.Azure.Functions.ExtensionBundle.Experimental",
+  "version": "[4.*, 5.0.0)"
+}
+```
+
 ## Next Steps
 
 - Add [API Management]() to your MCP server
