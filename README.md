@@ -55,12 +55,6 @@ An Azure Storage Emulator is needed for this particular sample because we will s
    cd src
    ```
 
-1. Install required extensions
-   ```shell
-   func extensions install
-   ```
-> **Note** if you miss this step the function will not start
-
 1. Install Python dependencies
    ```shell
    pip install -r requirements.txt
