@@ -101,15 +101,27 @@ module storage './core/storage/storage-account.bicep' = {
   }
 }
 
-var storageRoleDefinitionId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage Blob Data Owner role
+var StorageBlobDataOwner = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+var StorageQueueDataContributor = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 
-// Allow access from api to storage account using a managed identity
-module storageRoleAssignmentApi 'app/storage-Access.bicep' = {
-  name: 'storageRoleAssignmentapi'
+// Allow access from api to blob storage using a managed identity
+module blobRoleAssignmentApi 'app/storage-Access.bicep' = {
+  name: 'blobRoleAssignmentapi'
   scope: rg
   params: {
     storageAccountName: storage.outputs.name
-    roleDefinitionID: storageRoleDefinitionId
+    roleDefinitionID: StorageBlobDataOwner
+    principalID: apiUserAssignedIdentity.outputs.identityPrincipalId
+  }
+}
+
+// Allow access from api to queue storage using a managed identity
+module queueRoleAssignmentApi 'app/storage-Access.bicep' = {
+  name: 'queueRoleAssignmentapi'
+  scope: rg
+  params: {
+    storageAccountName: storage.outputs.name
+    roleDefinitionID: StorageQueueDataContributor
     principalID: apiUserAssignedIdentity.outputs.identityPrincipalId
   }
 }
