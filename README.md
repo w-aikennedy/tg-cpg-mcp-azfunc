@@ -16,7 +16,7 @@ urlFragment: remote-mcp-functions-python
 
 # Getting Started with Remote MCP Servers using Azure Functions (Python)
 
-This is a quickstart template to easily build and deploy a custom remote MCP server to the cloud using Azure Functions with Python. You can clone/restore/run on your local machine with debugging, and `azd up` to have it in the cloud in a couple minutes. The MCP server is secured by design using keys and HTTPS, and allows more options for OAuth using EasyAuth and/or API Management as well as network isolation using VNET.
+This is a quickstart template to easily build and deploy a custom remote MCP server to the cloud using Azure Functions with Python. You can clone/restore/run on your local machine with debugging, and `azd up` to have it in the cloud in a couple minutes. The MCP server is secured by design using keys and HTTPS, and allows more options for OAuth using built-in auth and/or API Management as well as network isolation using VNET.
 
 If you're looking for this sample in more languages check out the [.NET/C#](https://github.com/Azure-Samples/remote-mcp-functions-dotnet) and [Node.js/TypeScript](https://github.com/Azure-Samples/remote-mcp-functions-typescript) versions.
 
@@ -50,17 +50,20 @@ An Azure Storage Emulator is needed for this particular sample because we will s
 
 ## Run your MCP Server locally from the terminal
 
-1. Change to the src folder in a new terminal window
+1. Change to the src folder in a new terminal window:
+
    ```shell
    cd src
    ```
 
-1. Install Python dependencies
+1. Install Python dependencies:
+
    ```shell
    pip install -r requirements.txt
    ```
 
 1. Start the Functions host locally:
+
    ```shell
    func start
    ```
@@ -72,9 +75,11 @@ An Azure Storage Emulator is needed for this particular sample because we will s
 ### VS Code - Copilot Edits
 
 1. **Add MCP Server** from command palette and add URL to your running Function app's SSE endpoint:
+
     ```shell
     http://0.0.0.0:7071/runtime/webhooks/mcp/sse
     ```
+
 1. **List MCP Servers** from command palette and start the server
 1. In Copilot chat agent mode enter a prompt to trigger the tool, e.g., select some code and enter this prompt
 
@@ -89,6 +94,7 @@ An Azure Storage Emulator is needed for this particular sample because we will s
     ```plaintext
     Retrieve snippet1 and apply to newFile.py
     ```
+
 1. When prompted to run the tool, consent by clicking **Continue**
 
 1. When you're done, press Ctrl+C in the terminal window to stop the Functions host process.
@@ -102,11 +108,13 @@ An Azure Storage Emulator is needed for this particular sample because we will s
     ```
 
 2. CTRL click to load the MCP Inspector web app from the URL displayed by the app (e.g. http://0.0.0.0:5173/#resources)
-3. Set the transport type to `SSE` 
+3. Set the transport type to `SSE`
 4. Set the URL to your running Function app's SSE endpoint and **Connect**:
+
     ```shell
     http://0.0.0.0:7071/runtime/webhooks/mcp/sse
     ```
+
 5. **List Tools**.  Click on a tool and **Run Tool**.  
 
 ## Deploy to Azure for Remote MCP
@@ -123,11 +131,11 @@ You can opt-in to a VNet being used in the sample. To do so, do this before `azd
 azd env set VNET_ENABLED true
 ```
 
-Additionally, [API Management]() can be used for improved security and policies over your MCP Server, and [App Service built-in authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization) can be used to set up your favorite OAuth provider including Entra.  
+Additionally, [API Management]() can be used for improved security and policies over your MCP Server, and [App Service built-in authentication](https://learn.microsoft.com/azure/app-service/overview-authentication-authorization) can be used to set up your favorite OAuth provider including Entra.  
 
 ### Connect to your function app from a client
 
-Your client will need a key in order to invoke the new hosted SSE endpoint, which will be of the form `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse`. The hosted function requires a system key by default which can be obtained from the [portal](https://learn.microsoft.com/en-us/azure/azure-functions/function-keys-how-to?tabs=azure-portal) or the CLI (`az functionapp keys list --resource-group <resource_group> --name <function_app_name>`). Obtain the system key named `mcp_extension`.
+Your client will need a key in order to invoke the new hosted SSE endpoint, which will be of the form `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse`. The hosted function requires a system key by default which can be obtained from the [portal](https://learn.microsoft.com/azure/azure-functions/function-keys-how-to?tabs=azure-portal) or the CLI (`az functionapp keys list --resource-group <resource_group> --name <function_app_name>`). Obtain the system key named `mcp_extension`.
 
 For MCP Inspector, you can include the key in the URL: `https://<funcappname>.azurewebsites.net/runtime/webhooks/mcp/sse?code=<your-mcp-extension-system-key>`.
 
@@ -284,6 +292,6 @@ Note that the `host.json` file also includes a reference to the experimental bun
 ## Next Steps
 
 - Add [API Management]() to your MCP server
-- Add [EasyAuth]() to your MCP server
+- Add [built-in auth]() to your MCP server
 - Enable VNET using VNET_ENABLED=true flag
 - Learn more about [related MCP efforts from Microsoft]()
