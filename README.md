@@ -117,6 +117,8 @@ An Azure Storage Emulator is needed for this particular sample because we will s
     http://0.0.0.0:7071/runtime/webhooks/mcp/sse
     ```
 
+>**Note** this step will not work in CodeSpaces.  Please move on to Deploy to Remote MCP.  
+
 5. **List Tools**.  Click on a tool and **Run Tool**.  
 
 ## Deploy to Azure for Remote MCP
