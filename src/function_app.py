@@ -113,6 +113,7 @@ def save_snippet(file: func.Out[str], context) -> str:
     type="mcpToolTrigger",
     toolName="get_channel_list",
     description="Retrieve list of sales channels used in reporting, and the total sales value associated with each in the last 12 months",
+    toolProperties="[]",
 )
 def get_channel_list() -> str:
     """
