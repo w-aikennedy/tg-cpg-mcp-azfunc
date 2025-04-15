@@ -31,7 +31,9 @@ tool_properties_save_snippets_object = [
     ToolProperty(_SNIPPET_PROPERTY_NAME, "string", "The content of the snippet."),
 ]
 
-tool_properties_get_snippets_object = [ToolProperty(_SNIPPET_NAME_PROPERTY_NAME, "string", "The name of the snippet.")]
+tool_properties_get_snippets_object = [
+    ToolProperty(_SNIPPET_NAME_PROPERTY_NAME, "string", "The name of the snippet.")
+]
 
 # Convert the tool properties to JSON
 tool_properties_save_snippets_json = json.dumps([prop.to_dict() for prop in tool_properties_save_snippets_object])
@@ -104,3 +106,27 @@ def save_snippet(file: func.Out[str], context) -> str:
     file.set(snippet_content_from_args)
     logging.info(f"Saved snippet: {snippet_content_from_args}")
     return f"Snippet '{snippet_content_from_args}' saved successfully"
+
+
+@app.generic_trigger(
+    arg_name="context",
+    type="mcpToolTrigger",
+    toolName="get_channel_list",
+    description="Retrieve list of sales channels used in reporting, and the total sales value associated with each in the last 12 months",
+)
+def get_channel_list() -> str:
+    """
+    Retrieves a snippet by name from Azure Blob Storage.
+
+    Args:
+        None
+
+    Returns:
+        str: The list of channels.
+    """
+    channel_list = [
+        {'channel_name': 'Hypermarket', 'sales_value': 600},
+        {'channel_name': 'Drugstore', 'sales_value': 1400},
+        {'channel_name': 'e-Commerce', 'sales_value': 900},
+    ]
+    return json.dumps(channel_list)
